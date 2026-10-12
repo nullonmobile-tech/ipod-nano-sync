@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPod Nano 3G Music Sync</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .device-status {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .device-status.connected {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .device-status.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .status-text strong {
+            color: #333;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .secondary:hover {
+            background: #d0d0d0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9fafc;
+        }
+
+        .upload-area:hover {
+            background: #f0f4ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area.dragover {
+            background: #e8eeff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .upload-area p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .upload-area .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .music-list {
+            background: #f9fafc;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .music-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .music-item:last-child {
+            border-bottom: none;
+        }
+
+        .music-item-name {
+            flex: 1;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .music-item-size {
+            color: #999;
+            font-size: 12px;
+            margin-right: 15px;
+        }
+
+        .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .playlist-section {
+            background: #f9fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .playlist-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .playlist-songs {
+            font-size: 13px;
+            color: #666;
+            padding-left: 15px;
+        }
+
+        .playlist-songs li {
+            margin: 5px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f9fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .alert.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert.error {
+            background: #ffcdd2;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 iPod Nano 3G Music Sync</h1>
+            <p>Connect your iPod Nano 3rd Generation and manage your music library</p>
+        </header>
+
+        <div class="content">
+            <!-- Device Connection Section -->
+            <div class="section">
+                <h2>Device Connection</h2>
+                <div class="device-status" id="deviceStatus">
+                    <div class="status-text">Status: <strong id="connectionStatus">Disconnected</strong></div>
+                    <div class="status-text">Device: <strong id="deviceName">None</strong></div>
+                    <div class="status-text">Storage: <strong id="deviceStorage">--</strong></div>
+                </div>
+                <button id="connectBtn" onclick="connectDevice()">🔌 Connect iPod</button>
+                <button id="disconnectBtn" class="secondary" onclick="disconnectDevice()" disabled>Disconnect</button>
+                <button id="requestAccessBtn" class="secondary" onclick="requestStorageAccess()" disabled>Request Storage Access</button>
+            </div>
+
+            <!-- Alerts -->
+            <div id="alertContainer"></div>
+
+            <!-- Stats Section -->
+            <div class="section">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalSongs">0</div>
+                        <div class="stat-label">Total Songs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="usedSpace">0MB</div>
+                        <div class="stat-label">Used Space</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="playlistCount">0</div>
+                        <div class="stat-label">Playlists</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Music Upload Section -->
+            <div class="section">
+                <h2>Add Music</h2>
+                <div class="info-box">
+                    📱 Supported formats: MP3, M4A, WAV, OGG. Click or drag files to upload.
+                </div>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="icon">📁</div>
+                    <p><strong>Click to select or drag music files here</strong></p>
+                    <p style="font-size: 12px; color: #999;">Multiple files supported</p>
+                </div>
+                <input type="file" id="fileInput" multiple accept=".mp3,.m4a,.wav,.ogg,.flac">
+                <div id="uploadProgress" style="display: none; margin-top: 15px;">
+                    <p id="uploadProgressText" style="font-size: 12px; color: #666; margin-bottom: 8px;"></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sync List Section -->
+            <div class="section">
+                <h2>Music on Device</h2>
+                <div style="margin-bottom: 15px;">
+                    <button id="syncBtn" onclick="syncToDevice()" disabled>🔄 Sync to Device</button>
+                    <button id="clearDeviceBtn" class="secondary" onclick="clearDevice()" disabled>🗑️ Clear Device</button>
+                    <button id="refreshBtn" class="secondary" onclick="refreshDeviceLibrary()" disabled>🔃 Refresh</button>
+                </div>
+                <div class="music-list" id="musicList">
+                    <div style="padding: 20px; text-align: center; color: #999;">
+                        No music added yet. Connect your device and add songs.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playlists Section -->
+            <div class="section">
+                <h2>Playlists</h2>
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="playlistName" placeholder="New playlist name..." style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 200px; margin-right: 10px;">
+                    <button id="createPlaylistBtn" onclick="createPlaylist()" disabled>+ Create Playlist</button>
+                </div>
+                <div id="playlistsContainer">
+                    <div style="padding: 20px; text-align: center; color: #999;">
+                        No playlists yet. Create one to organize your music.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="section">
+                <h2>About</h2>
+                <div class="info-box">
+                    This tool uses the WebUSB API to communicate directly with your iPod Nano 3rd Generation. 
+                    Your device must support USB Mass Storage mode. Works best on Android devices and select desktop environments.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
